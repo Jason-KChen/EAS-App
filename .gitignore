@@ -1,3 +1,4 @@
 .idea/
 eas-backend/node_modules
 eas-frontend/node_modules
+eas-backend/.env

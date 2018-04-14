@@ -15,7 +15,8 @@ class App extends Component {
           <div className="nav-wrapper">
             <a disabled className="brand-logo center">EAS</a>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
-              <li><a href="#">Under Construction</a></li>
+              <li><a>Under Construction</a></li>
+              <li><a>Version 0.1</a></li>
             </ul>
           </div>
         </nav>
