@@ -11,13 +11,14 @@ router.get('/get-live-earthquakes', async (req, res, next) => {
     FilterExpression : '#t >= :time',
     ExpressionAttributeNames: {"#t": "time"},
     ExpressionAttributeValues : {':time': currentEpoch},
+    ProjectionExpression: "longitude, latitude, id"
   }
 
   try {
     let result = await db.scan(params).promise()
     let data = result.hasOwnProperty('Items') ? result['Items'] : []
     res.send({
-      data: result['Items'],
+      data: data,
       status: true,
     })
   } catch (err) {
@@ -40,7 +41,7 @@ router.get('/get-earthquake-info', async (req, res, next) => {
   let params = {
     TableName: process.env.DYNAMODB_EAS_PROD,
     Key: {
-      id: req.query['earthquakeId']
+      id: req.query['earthquakeId'],
     }
   }
   try {

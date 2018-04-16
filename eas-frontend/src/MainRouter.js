@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
-import MapView from "./Views/MapView"
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
+import MainDashboard from "./Views/MainDashboard"
 
 @inject('rootStore')
 @observer
@@ -14,7 +14,7 @@ class MainRouter extends Component {
     return (
       <Router>
         <div>
-          <Route exact path="/map" component={MapView}/>
+          <Route exact path="/map" component={MainDashboard}/>
         </div>
       </Router>
     )
