@@ -20,76 +20,62 @@ class MainDashboard extends Component {
 
   render () {
 
-    const comment_pan = this.mainMapStore.comments.has('ready') ? (
-      <p>gg</p>
+    const userComments = this.mainMapStore.comments.map((object, index) => {
+      return (
+        <div key={index} className="col s12">
+          <div className="card-panel grey lighten-5" style={{
+            paddingBottom: '5px',
+            marginBottom: '5px'
+          }}>
+            <div className="row" style={{marginBottom: '0px'}}>
+              <div className="row valign-wrapper" style={{marginBottom: '5px'}}>
+                    <span className="black-text" style={{ marginLeft: '15px'}}>
+                      {object.poster}: {object.content} - {object.when} minutes ago.
+                    </span>
+              </div>
+            </div>
+            <div className="row" style={{marginBottom: '0px'}}>
+              <div className="col s6">
+                <a disabled={object.mediaURL.length === 0} onClick={() => {window.open(object.mediaURL, '_blank').focus()}} className="green-text waves-effect waves-teal btn-flat">{object.mediaURL.length === 0 ? 'Not Available' : 'View Media'}</a>
+              </div>
+              <div className="col s6">
+                <a disabled={object.flagged} onClick={() => {this.mainMapStore.flagComment(object.poster, object.time, index)}} className="pink-text waves-effect waves-white btn-flat">{object.flagged ? 'Flagged' : 'Flag Comment'}</a>
+              </div>
+            </div>
+          </div>
+        </div>)
+    })
+
+    const comment_pan = this.mainMapStore.selectedEarthquakeId === null ? (
+      <p style={{paddingTop: '20px'}}>
+        Select a pin to view
+      </p>
     ) : (
-      <div style={{display: 'block', height: '500px', overflow: 'auto'}}>
-        <div className="row" style={{height: '100px'}}>
-          <div className="col s12">
-            <div className="card horizontal">
-              <div className="card-stacked col s6">
-                <div className="card-content">
-                  <span className="card-title">UserName here</span>
-                  <p>
-                    Wow
-                  </p>
-                </div>
-                <div className="card-action">
-                  <a href="#">Report</a>
-                </div>
-              </div>
-              <div className="card-image col s6">
-                <img src="http://materializecss.com/images/sample-1.jpg"/>
-              </div>
-            </div>
+      <div> {
+        this.mainMapStore.comments.length === 0 ? (
+          <p style={{paddingTop: '20px'}}>
+            None
+          </p>
+        ) : (
+          <div className="" style={{marginTop: '5px', display: 'block', height: '300px', overflow: 'auto'}}>
+            {userComments}
+          </div>
+        )}
+        <div className="row" style={{marginBottom: '0px'}}>
+          <div className="input-field col s9">
+            <input value={this.mainMapStore.userComment} onChange={(e) => this.mainMapStore.userCommentChange(e)} id="comment_content" type="text" />
+            <label className="active" htmlFor="comment_content">Enter Your Comment</label>
+          </div>
+          <div className="input-field col s3">
+            <button className="btn-small waves-effect waves-light" disabled={this.mainMapStore.userComment.length === 0} onClick={() => this.mainMapStore.userCommentOnSubmit()}>Submit
+              <i className="material-icons right">send</i>
+            </button>
           </div>
         </div>
-        <div className="row" style={{height: '100px'}}>
-          <div className="col s12">
-            <div className="card horizontal">
-              <div className="card-stacked col s6">
-                <div className="card-content">
-                  <span className="card-title">UserName here</span>
-                  <p>
-                    Wow
-                  </p>
-                </div>
-                <div className="card-action">
-                  <a href="#">Report</a>
-                </div>
-              </div>
-              <div className="card-image col s6">
-                <iframe width="220px" height="150px" src="https://www.youtube.com/embed/gSQMGGDbUTU" frameBorder="0" allowFullScreen/>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row" style={{height: '100px'}}>
-          <div className="col s12">
-            <div className="card">
-              <div className="card-content">
-                <span className="card-title">User Name here</span>
-                <p>I am a very simple card. I am good at containing small bits of information.
-                  I am convenient because I require little markup to use effectively.</p>
-              </div>
-              <div className="card-action">
-                <a href="#">Report</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row" style={{height: '200px'}}>
-          <div className="col s12">
-            <div className="card">
-              <div className="card-content">
-                <span className="card-title">User Name here</span>
-                <p>I am a very simple card. I am good at containing small bits of information.
-                  I am convenient because I require little markup to use effectively.</p>
-              </div>
-              <div className="card-action">
-                <a href="#">Report</a>
-              </div>
-            </div>
+        <div className="row">
+          <div className="input-field col s12">
+            <input value={this.mainMapStore.mediaURL} onChange={(e) => this.mainMapStore.mediaURLChange(e)} id="media_url" type="text" />
+            <label className="active" htmlFor="media_url">Optional, Want to share an image? Paste the url here</label>
           </div>
         </div>
       </div>
@@ -171,22 +157,6 @@ class MainDashboard extends Component {
             </div>
             <div id="comments-panel" style={{backgroundColor: '#f7f7f7'}} className="col s12">
               {comment_pan}
-            </div>
-          </div>
-        </div>
-        <div>
-          <div className="row">
-            <div className="col s12 m6">
-              <div className="card">
-                <div className="card-content">
-                  <p>I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
-                </div>
-                <div className="card-image">
-                  <img src="http://materializecss.com/images/sample-1.jpg"/>
-                    <span className="card-title">Card Title</span>
-                    <a className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">add</i></a>
-                </div>
-              </div>
             </div>
           </div>
         </div>

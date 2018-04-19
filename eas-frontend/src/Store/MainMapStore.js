@@ -3,9 +3,15 @@ import { observable, action } from 'mobx'
 export class MainMapStore {
   @observable recentEarthquakes = []
   @observable selectedEarthquake = new Map()
-  @observable comments = new Map()
+  @observable comments = []
   @observable news = new Map()
+  @observable selectedEarthquakeId = null
   // @observable refreshMap = false
+
+  // user submission here
+  @observable userComment = ''
+  @observable mediaURL = ''
+
 
   constructor (rootStore) {
     this.rootStore = rootStore
@@ -48,8 +54,20 @@ export class MainMapStore {
   }
 
   @action async pinOnClick (id) {
+    if (this.selectedEarthquakeId === id) {
+      return
+    }
+
+    this.selectedEarthquakeId = id
+    await this.fetchDetailedInfo()
+    await this.fetchComments()
+  }
+
+
+  @action async fetchDetailedInfo () {
+
     try {
-      let res = await fetch(this.BASE + '/api/earthquake/get-earthquake-info?earthquakeId=' + id, {
+      let res = await fetch(this.BASE + '/api/earthquake/get-earthquake-info?earthquakeId=' + this.selectedEarthquakeId, {
         Method: 'GET',
         headers: {
           'Accept': 'application/json'
@@ -85,8 +103,124 @@ export class MainMapStore {
     }
   }
 
-  @action async fetchComments (id) {
+  @action async fetchComments () {
+    console.log('comments')
+    try {
+      let res = await fetch(this.BASE + '/api/comment/get-comments-with-earthquake?earthquakeId=' + this.selectedEarthquakeId, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      })
+      const data = await res.json()
 
+      if (data.status) {
+        // this.comments.clear()
+        this.comments = data.data.sort((a, b) => {return (a['time'] < b['time'])}).map((obj) => {
+
+          let postMediaURL = obj['media_url'] === 'N/A' ? '' : obj['media_url']
+
+          if (postMediaURL !== '' && !(obj['media_url'].startsWith('http://') || obj['media_url'].startsWith('http://'))) {
+            postMediaURL = 'http://' + obj['media_url']
+          }
+
+          let temp = {}
+          temp.mediaURL = postMediaURL
+          temp.content = obj['content']
+          temp.poster = obj['username']
+          temp.when = (((new Date).getTime() - obj['time']) / (1000 * 60)).toFixed(0)
+          temp.time = obj['time']
+          temp.earthquakeId = obj['earthquake_id']
+          temp.flagged = obj['flagged']
+          console.log(temp)
+          return temp
+        })
+      } else {
+        window.toastr.warning('Failed to load comments')
+      }
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Failed to load comments')
+    }
+  }
+
+  @action userCommentChange (e) {
+    if (e.target.value !== null) {
+      this.userComment = e.target.value
+    } else {
+      this.userComment = e.target.value
+    }
+  }
+
+  @action async flagComment (poster, time, index) {
+    try {
+      let res = await fetch(this.BASE + '/api/comment/flag-comment', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: poster,
+          time: time
+        })
+      })
+      const data = await res.json()
+      console.log(data)
+
+      if (data.status) {
+        this.comments[index].flagged = true
+        window.toastr.info('Comment under review')
+      } else {
+        window.toastr.warning('Failed to flag comment.')
+      }
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Failed to flag comment..')
+    }
+  }
+
+  @action mediaURLChange (e) {
+    if (e.target.value !== null) {
+      this.mediaURL = e.target.value
+    } else {
+      this.mediaURL = e.target.value
+    }
+  }
+
+  @action async userCommentOnSubmit () {
+    await this.submitComment()
+    await this.fetchComments()
+  }
+
+  @action async submitComment () {
+    try {
+      let res = await fetch(this.BASE + '/api/comment/new-comment', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          media: this.mediaURL.length === 0 ? 'N/A' : this.mediaURL,
+          username: this.rootStore.uiStore.username,
+          content: this.userComment,
+          earthquakeId: this.selectedEarthquakeId
+        })
+      })
+      const data = await res.json()
+
+      if (data.status) {
+        this.userComment = ''
+        this.mediaURL = ''
+        window.toastr.info('Your comment is submitted')
+      } else {
+        window.toastr.warning('Failed to submit comment')
+      }
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Failed to submit comment')
+    }
   }
 }
 

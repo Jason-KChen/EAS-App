@@ -40,7 +40,7 @@ router.post('/flag-comment', async (req, res, next) => {
 })
 
 router.post('/delete-comment', async (req, res, next) => {
-  if (!req.body['username'] || !req.body['time']) {
+  if (!req.hasOwnProperty('username') || !req.body['time']) {
     return res.send({
       data: 'Missing comment id',
       status: false
@@ -77,6 +77,7 @@ router.get('/get-comments-with-earthquake', async (req, res, next) => {
     TableName: process.env.COMMENT_TABLE,
     FilterExpression : 'earthquake_id = :query_id',
     ExpressionAttributeValues : {':query_id': req.query['earthquakeId']},
+    ScanIndexForward: true
   }
 
   try {
