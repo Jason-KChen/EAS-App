@@ -3,9 +3,73 @@ let router = express.Router()
 let db = require('./../../db/dynamoCon')
 let validator = require('./validator')
 
-// TODO flag a comment
-// TODO delete a comment
+router.post('/flag-comment', async (req, res, next) => {
+  if (!req.body['username'] || !req.body['time']) {
+    return res.send({
+      data: 'Missing attributes',
+      status: false
+    })
+  }
 
+  let params = {
+    TableName: process.env.COMMENT_TABLE,
+    UpdateExpression: 'set flagged = :x',
+    Key: {
+      'username': req.body['username'],
+      'time': req.body['time']
+    },
+    ExpressionAttributeValues: {
+      ':x' : true
+    }
+  }
+
+  try {
+    let result = await db.update(params).promise()
+
+    res.send({
+      data: 'Good',
+      status: true
+    })
+  } catch (err) {
+    console.log(err)
+    res.send({
+      data: 'Something went wrong',
+      status: false
+    })
+  }
+})
+
+router.post('/delete-comment', async (req, res, next) => {
+  if (!req.body['username'] || !req.body['time']) {
+    return res.send({
+      data: 'Missing comment id',
+      status: false
+    })
+  }
+
+  let params = {
+    TableName: process.env.COMMENT_TABLE,
+    Key: {
+      username: req.body['username'],
+      time: req.body['time']
+    }
+  }
+
+  try {
+    let result = await db.delete(params).promise()
+
+    res.send({
+      data: 'Good',
+      status: true
+    })
+  } catch (err) {
+    console.log(err)
+    res.send({
+      data: 'Something went wrong',
+      status: false
+    })
+  }
+})
 
 router.get('/get-comments-with-earthquake', async (req, res, next) => {
 
@@ -48,7 +112,6 @@ router.post('/new-comment', async (req, res, next) => {
       username: req.body['username'],
       earthquake_id: req.body['earthquakeId'],
       time: currentEpoch,
-      id: currentEpoch.toString() + req.body['username'],
       content: req.body['content'],
       media_url: req.body['media']
     }
