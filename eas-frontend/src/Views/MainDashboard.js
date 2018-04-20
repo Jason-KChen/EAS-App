@@ -29,17 +29,17 @@ class MainDashboard extends Component {
           }}>
             <div className="row" style={{marginBottom: '0px'}}>
               <div className="row valign-wrapper" style={{marginBottom: '5px'}}>
-                    <span className="black-text" style={{ marginLeft: '15px'}}>
-                      {object.poster}: {object.content} - {object.when} minutes ago.
-                    </span>
+                <span className="black-text" style={{ marginLeft: '15px'}}>
+                  {object.poster}: {object.content} - {object.when} minutes ago.
+                </span>
               </div>
             </div>
             <div className="row" style={{marginBottom: '0px'}}>
-              <div className="col s6">
-                <a disabled={object.mediaURL.length === 0} onClick={() => {window.open(object.mediaURL, '_blank').focus()}} className="green-text waves-effect waves-teal btn-flat">{object.mediaURL.length === 0 ? 'Not Available' : 'View Media'}</a>
+              <div className="col s6 input-field">
+                <button disabled={object.mediaURL.length === 0} onClick={() => {window.open(object.mediaURL, '_blank').focus()}} className="green-text waves-effect waves-teal btn-flat">{object.mediaURL.length === 0 ? 'Not Available' : 'View Media'}</button>
               </div>
-              <div className="col s6">
-                <a disabled={object.flagged} onClick={() => {this.mainMapStore.flagComment(object.poster, object.time, index)}} className="pink-text waves-effect waves-white btn-flat">{object.flagged ? 'Flagged' : 'Flag Comment'}</a>
+              <div className="col s6 input-field">
+                <button disabled={object.flagged} onClick={() => {this.mainMapStore.flagComment(object.poster, object.time, index)}} className="pink-text waves-effect waves-white btn-flat">{object.flagged ? 'Flagged' : 'Flag Comment'}</button>
               </div>
             </div>
           </div>
@@ -53,8 +53,8 @@ class MainDashboard extends Component {
     ) : (
       <div> {
         this.mainMapStore.comments.length === 0 ? (
-          <p style={{paddingTop: '20px'}}>
-            None
+          <p style={{fontSize: '1.5em', paddingTop: '20px'}}>
+            No comments available...
           </p>
         ) : (
           <div className="" style={{marginTop: '5px', display: 'block', height: '300px', overflow: 'auto'}}>

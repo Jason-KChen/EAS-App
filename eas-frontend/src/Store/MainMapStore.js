@@ -115,12 +115,11 @@ export class MainMapStore {
       const data = await res.json()
 
       if (data.status) {
-        // this.comments.clear()
         this.comments = data.data.sort((a, b) => {return (a['time'] < b['time'])}).map((obj) => {
 
           let postMediaURL = obj['media_url'] === 'N/A' ? '' : obj['media_url']
 
-          if (postMediaURL !== '' && !(obj['media_url'].startsWith('http://') || obj['media_url'].startsWith('http://'))) {
+          if (postMediaURL !== '' && !(obj['media_url'].startsWith('http://') || obj['media_url'].startsWith('https://'))) {
             postMediaURL = 'http://' + obj['media_url']
           }
 
