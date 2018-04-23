@@ -1,35 +1,30 @@
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import { Redirect } from 'react-router-dom'
-import {withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
+import {withScriptjs, withGoogleMap, GoogleMap, Circle } from 'react-google-maps'
 
 
 @inject('rootStore')
 @observer
-class MapView extends Component {
+class AdvancedMapView extends Component {
   constructor (props) {
     super(props)
-    this.mainMapStore = this.props.rootStore.mainMapStore
-    this.lat = 45.221753
-    this.long = -119.715238
+    this.detailedInfoStore = this.props.rootStore.detailedInfoStore
+
+    // default radius
+    this.radius = 1000
   }
 
   async componentDidMount () {
-    await this.mainMapStore.fetchRecentEarthquakes()
   }
 
   render () {
 
-    const markers = this.mainMapStore.recentEarthquakes.map((obj, index) => {
-      return (<Marker
-        onClick={() => this.mainMapStore.pinOnClick(obj.id)}
-        key={index}
-        position={{ lat: obj.latitude, lng: obj.longitude }}/>)
-    })
+    const circle = <Circle center={{ lat: this.detailedInfoStore.latitude, lng: this.detailedInfoStore.longitude }} radius={this.radius * parseInt(this.detailedInfoStore.selectedEarthquake.get('mag'))}/>
 
     const Gmap = withScriptjs(withGoogleMap((props) =>
-      <GoogleMap defaultZoom={3} defaultCenter={{ lat: this.lat, lng: this.long }}>
-        {markers}
+      <GoogleMap defaultZoom={12} defaultCenter={{ lat: this.detailedInfoStore.latitude, lng: this.detailedInfoStore.longitude }}>
+        {circle}
       </GoogleMap>))
 
     return (
@@ -43,4 +38,4 @@ class MapView extends Component {
   }
 }
 
-export default MapView
+export default AdvancedMapView

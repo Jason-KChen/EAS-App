@@ -137,7 +137,7 @@ class MainDashboard extends Component {
           Magnitude: {this.mainMapStore.selectedEarthquake.get('mag')}
         </div>
         <div className="row">
-          When: {this.mainMapStore.selectedEarthquake.get('when')} hours ago
+          When: {this.mainMapStore.selectedEarthquake.get('when')} minutes ago
         </div>
         <div className="row">
           Local Time: {this.mainMapStore.selectedEarthquake.get('local')}
