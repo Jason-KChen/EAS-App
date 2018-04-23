@@ -46,6 +46,29 @@ class MainDashboard extends Component {
         </div>)
     })
 
+    const availableNews = this.mainMapStore.news.map((object, index) => {
+      return (
+        <div key={index} className="col s12">
+          <div className="card-panel grey lighten-5" style={{
+            paddingBottom: '5px',
+            marginBottom: '5px'
+          }}>
+            <div className="row" style={{marginBottom: '0px'}}>
+              <div className="row valign-wrapper" style={{marginBottom: '5px'}}>
+                <span className="black-text" style={{ marginLeft: '10%', marginRight: '10%', font: '1.5em'}}>
+                  {object.title}
+                </span>
+              </div>
+            </div>
+            <div className="row" style={{marginBottom: '0px'}}>
+              <div className="col s12 input-field">
+                <button onClick={() => {window.open(object.url, '_blank').focus()}} className="green-text waves-effect waves-teal btn-flat">View Article</button>
+              </div>
+            </div>
+          </div>
+        </div>)
+    })
+
     const comment_pan = this.mainMapStore.selectedEarthquakeId === null ? (
       <p style={{paddingTop: '20px'}}>
         Select a pin to view
@@ -81,12 +104,22 @@ class MainDashboard extends Component {
       </div>
     )
 
-    const news_pan = this.mainMapStore.news.has('ready') ? (
-      <p>gg</p>
-    ) : (
+    const news_pan = this.mainMapStore.selectedEarthquakeId === null ? (
       <p style={{paddingTop: '20px'}}>
         Select a pin to view
       </p>
+    ) : (
+      <div> {
+        this.mainMapStore.news.length === 0 ? (
+          <p style={{fontSize: '1.5em', paddingTop: '20px'}}>
+            No news available...
+          </p>
+        ) : (
+          <div className="" style={{marginTop: '5px', display: 'block', height: '480px', overflow: 'auto'}}>
+            {availableNews}
+          </div>
+        )}
+      </div>
     )
 
     const info_pan = this.mainMapStore.selectedEarthquake.has('ready') ? (

@@ -4,7 +4,7 @@ export class MainMapStore {
   @observable recentEarthquakes = []
   @observable selectedEarthquake = new Map()
   @observable comments = []
-  @observable news = new Map()
+  @observable news = []
   @observable selectedEarthquakeId = null
   // @observable refreshMap = false
 
@@ -61,6 +61,49 @@ export class MainMapStore {
     this.selectedEarthquakeId = id
     await this.fetchDetailedInfo()
     await this.fetchComments()
+    await this.fetchNews()
+  }
+
+  @action async fetchNews () {
+
+    let country = this.selectedEarthquake.get('country')
+    let location = ''
+    let splitted = this.selectedEarthquake.get('place').split(', ')
+
+    if (splitted.length <= 1) {
+      console.log('Bad location')
+      this.news.clear()
+      return
+    }
+
+    location = splitted[1]
+    let date = new Date()
+    let timeString = date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString() + '-' + date.getDate().toString()
+
+    try {
+      let res = await fetch(this.BASE + '/api/news/get-relevant-news?location=' + location + '&country=' + country + '&time=' + timeString)
+      let d = await res.json()
+
+      if (d.status) {
+        this.news.clear()
+        this.news = d.data.map((object, index) => {
+          let temp = {}
+          temp['author'] = object.author
+          temp['title'] = object.title
+          temp['description'] = object.description
+          temp['url'] = object.url
+          temp['source'] = object.source.name
+
+          return temp
+        })
+      } else {
+        window.toastr.warning('Failed to load news')
+      }
+
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Failed to load news')
+    }
   }
 
 

@@ -39,6 +39,42 @@ router.post('/flag-comment', async (req, res, next) => {
   }
 })
 
+router.post('/unflag-comment', async (req, res, next) => {
+  if (!req.body['username'] || !req.body['time']) {
+    return res.send({
+      data: 'Missing attributes',
+      status: false
+    })
+  }
+
+  let params = {
+    TableName: process.env.COMMENT_TABLE,
+    UpdateExpression: 'set flagged = :x',
+    Key: {
+      'username': req.body['username'],
+      'time': req.body['time']
+    },
+    ExpressionAttributeValues: {
+      ':x' : false
+    }
+  }
+
+  try {
+    let result = await db.update(params).promise()
+
+    res.send({
+      data: 'Good',
+      status: true
+    })
+  } catch (err) {
+    console.log(err)
+    res.send({
+      data: 'Something went wrong',
+      status: false
+    })
+  }
+})
+
 router.post('/delete-comment', async (req, res, next) => {
   if (!req.hasOwnProperty('username') || !req.body['time']) {
     return res.send({
@@ -95,6 +131,31 @@ router.get('/get-comments-with-earthquake', async (req, res, next) => {
     })
   }
 })
+
+router.get('/get-flagged-comments', async (req, res, next) => {
+
+  let params = {
+    TableName: process.env.COMMENT_TABLE,
+    FilterExpression : 'flagged = :v',
+    ExpressionAttributeValues : {':v': true},
+  }
+
+  try {
+    let result = await db.scan(params).promise()
+    let data = result.hasOwnProperty('Items') ? result['Items'] : []
+    res.send({
+      data: data,
+      status: true,
+    })
+  } catch (err) {
+    console.log(err)
+    res.send({
+      data: [],
+      status: false
+    })
+  }
+})
+
 
 router.post('/new-comment', async (req, res, next) => {
   if (!validator.validNewCommentInfo(req)) {

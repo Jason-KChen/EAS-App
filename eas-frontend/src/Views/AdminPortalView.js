@@ -13,9 +13,17 @@ class AdminDashboard extends Component {
 
   async componentDidMount () {
     this.sidePanel = window.M.Tabs.init(window.$('#management-tabs'));
+    await this.managementStore.fetchNonAdminUsers()
   }
 
   render () {
+
+    const registeredUsers = this.managementStore.userList.map((name, index) => {
+      return (
+        <li key={index} className="collection-item"><div>name<a href="#!" className="secondary-content"><i className="material-icons">send</i></a></div></li>
+      )
+    })
+
     return(
       <div className="container">
         <div className='row'>
@@ -40,7 +48,10 @@ class AdminDashboard extends Component {
               heelo
             </div>
             <div id="manage-users-panel" style={{backgroundColor: '#f7f7f7'}} className="col s12">
-              2
+              <ul className="collection with-header">
+                <li className="collection-header"><h4>Non-Admin Users</h4></li>
+                {registeredUsers}
+              </ul>
             </div>
           </div>
         </div>
