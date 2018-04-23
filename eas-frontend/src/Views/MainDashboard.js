@@ -20,6 +20,12 @@ class MainDashboard extends Component {
 
   render () {
 
+    const adminOption = this.mainMapStore.rootStore.uiStore.isAdmin ? (
+      <a className="waves-effect waves-teal btn-flat" onClick={() => this.props.history.push('/admin')} style={{ marginRight: '10px'}}><i className="material-icons right">accessibility</i>Admin Portal</a>
+    ) : (
+      null
+    )
+
     const userComments = this.mainMapStore.comments.map((object, index) => {
       return (
         <div key={index} className="col s12">
@@ -162,7 +168,7 @@ class MainDashboard extends Component {
         </div>
         <div className="row">
           <div className="col s3">
-            {/*{adminOption}*/}
+            {adminOption}
           </div>
           <div className="col offset-s3 s6">
             <a className="waves-effect waves-teal btn-flat" style={{ marginRight: '10px'}}><i className="material-icons right">search</i>Search</a>

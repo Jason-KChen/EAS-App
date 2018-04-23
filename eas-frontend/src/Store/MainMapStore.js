@@ -123,7 +123,7 @@ export class MainMapStore {
         let utcFormatted = window.moment(utcDate).format("MMMM Do YYYY, h:mm:ss a")
         let localTime = new Date(data.data[0]['time'] + data.data[0]['tz'] * 60 * 1000)
         let localFormatted = window.moment(localTime).format("MMMM Do YYYY, h:mm:ss a")
-        let when = (((new Date).getTime() - data.data[0]['time']) / (1000 * 60 * 60)).toFixed(1)
+        let when = (((new Date).getTime() - data.data[0]['time']) / (1000 * 60)).toFixed(1)
 
         this.selectedEarthquake.set('id', data.data[0]['id'])
         this.selectedEarthquake.set('place', data.data[0]['place'])
