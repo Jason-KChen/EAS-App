@@ -20,7 +20,7 @@ class AdvancedMapView extends Component {
 
   render () {
 
-    const circle = <Circle center={{ lat: this.detailedInfoStore.latitude, lng: this.detailedInfoStore.longitude }} radius={this.radius * parseInt(this.detailedInfoStore.selectedEarthquake.get('mag'))}/>
+    const circle = <Circle center={{ lat: this.detailedInfoStore.latitude, lng: this.detailedInfoStore.longitude }} radius={this.radius * parseInt(this.detailedInfoStore.selectedEarthquake.get('mag') + 1)}/>
 
     const Gmap = withScriptjs(withGoogleMap((props) =>
       <GoogleMap defaultZoom={12} defaultCenter={{ lat: this.detailedInfoStore.latitude, lng: this.detailedInfoStore.longitude }}>

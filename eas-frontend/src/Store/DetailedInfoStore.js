@@ -1,10 +1,12 @@
 import { observable, action } from 'mobx'
 
 export class DetailedInfoStore {
-  @observable selectedEarthquakeId = 'pr2018113011'
+  @observable selectedEarthquakeId = null
   @observable selectedEarthquake = new Map()
-  @observable latitude = 45.221753
-  @observable longitude = -119.715238
+  @observable latitude = null
+  @observable longitude = null
+  @observable comments = []
+  @observable news = []
 
   constructor (rootStore) {
     this.rootStore = rootStore
@@ -35,10 +37,17 @@ export class DetailedInfoStore {
         this.selectedEarthquake.set('url', data.data[0]['url'])
         this.selectedEarthquake.set('utc', utcFormatted)
         this.selectedEarthquake.set('local', localFormatted)
+        this.selectedEarthquake.set('localTime', localTime)
         this.selectedEarthquake.set('latitude', data.data[0]['latitude'])
         this.selectedEarthquake.set('longitude', data.data[0]['longitude'])
         this.selectedEarthquake.set('mag', data.data[0]['mag'])
         this.selectedEarthquake.set('when', when)
+        this.selectedEarthquake.set('depth', data.data[0]['depth'])
+        this.selectedEarthquake.set('status', data.data[0]['status'])
+        this.selectedEarthquake.set('nst', data.data[0]['nst'])
+        this.selectedEarthquake.set('tsunami', data.data[0]['tsunami'])
+        this.selectedEarthquake.set('magnitude_type', data.data[0]['magnitude_type'])
+
         this.selectedEarthquake.set('ready', true)
 
         this.latitude = this.selectedEarthquake.get('latitude')
@@ -93,6 +102,76 @@ export class DetailedInfoStore {
       window.toastr.warning('Failed to load comments')
     }
   }
+
+  @action async fetchNews () {
+
+    let country = this.selectedEarthquake.get('country')
+    let location = ''
+    let splitted = this.selectedEarthquake.get('place').split(', ')
+
+    if (splitted.length <= 1) {
+      console.log('Bad location')
+      this.news.clear()
+      return
+    }
+
+    location = splitted[1]
+    let timeString = this.selectedEarthquake.get('localTime').getFullYear().toString() + '-' + (this.selectedEarthquake.get('localTime').getMonth() + 1).toString() + '-' + this.selectedEarthquake.get('localTime').getDate().toString()
+
+    try {
+      let res = await fetch(this.BASE + '/api/news/get-relevant-news?location=' + location + '&country=' + country + '&time=' + timeString)
+      let d = await res.json()
+
+      if (d.status) {
+        this.news.clear()
+        this.news = d.data.map((object, index) => {
+          let temp = {}
+          temp['author'] = object.author
+          temp['title'] = object.title
+          temp['description'] = object.description
+          temp['url'] = object.url
+          temp['source'] = object.source.name
+
+          return temp
+        })
+      } else {
+        window.toastr.warning('Failed to load news')
+      }
+
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Failed to load news')
+    }
+  }
+
+  @action async flagComment (poster, time, index) {
+    try {
+      let res = await fetch(this.BASE + '/api/comment/flag-comment', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: poster,
+          time: time
+        })
+      })
+      const data = await res.json()
+      console.log(data)
+
+      if (data.status) {
+        this.comments[index].flagged = true
+        window.toastr.info('Comment under review')
+      } else {
+        window.toastr.warning('Failed to flag comment.')
+      }
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Failed to flag comment..')
+    }
+  }
+
 }
 
 export default DetailedInfoStore

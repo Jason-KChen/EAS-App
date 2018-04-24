@@ -152,7 +152,15 @@ class MainDashboard extends Component {
           ID: {this.mainMapStore.selectedEarthquake.get('id')}
         </div>
         <div className="row">
-          <a href={this.mainMapStore.selectedEarthquake.get('url')} target="_blank">View on USGS</a>
+          <a style={{fontSize: '16px', paddingLeft: '0px'}} className="btn-flat" onClick={() => {
+            this.mainMapStore.rootStore.detailedInfoStore.selectedEarthquakeId = this.mainMapStore.selectedEarthquake.get('id')
+            this.props.history.push('/detailed-info')
+          }}>
+            View Details
+          </a>
+        </div>
+        <div className="row">
+          <a style={{fontSize: '16px', paddingLeft: '0px'}} className="btn-flat" href={this.mainMapStore.selectedEarthquake.get('url')} target="_blank">View on USGS</a>
         </div>
       </div>) : (
         <p style={{paddingTop: '20px'}}>
