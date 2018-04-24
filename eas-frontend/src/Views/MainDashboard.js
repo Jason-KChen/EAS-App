@@ -179,7 +179,7 @@ class MainDashboard extends Component {
             {adminOption}
           </div>
           <div className="col offset-s3 s6">
-            <a className="waves-effect waves-teal btn-flat" style={{ marginRight: '10px'}}><i className="material-icons right">search</i>Search</a>
+            <a className="waves-effect waves-teal btn-flat" onClick={() => {this.props.history.push('/search')}} style={{ marginRight: '10px'}}><i className="material-icons right">search</i>Search</a>
             <a className="waves-effect waves-teal btn-flat" style={{ marginRight: '10px'}}><i className="material-icons right">sort</i>Analytics</a>
             <a className="waves-effect waves-teal btn-flat" onClick={() => this.mainMapStore.refreshMap()} style={{ marginRight: '10px'}}><i className="material-icons right">autorenew</i>Refresh</a>
             <a className="waves-effect waves-teal btn-flat"><i className="material-icons right">call_made</i>Logout</a>

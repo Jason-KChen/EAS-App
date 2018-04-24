@@ -2,6 +2,7 @@ import UIStore from "./uiStore"
 import MainMapStore from "./MainMapStore"
 import ManagementStore from "./ManagementStore"
 import {DetailedInfoStore} from "./DetailedInfoStore"
+import AnalyticalStore from "./AnalyticalStore"
 
 class RootStore {
   constructor () {
@@ -9,6 +10,7 @@ class RootStore {
     this.mainMapStore = new MainMapStore(this)
     this.managementStore = new ManagementStore(this)
     this.detailedInfoStore = new DetailedInfoStore(this)
+    this.analyticalStore = new AnalyticalStore(this)
   }
 }
 
