@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 
 var api = require('./routes/api')
-let env = require('dotenv').config()
+// let env = require('dotenv').config()
 let cors = require('cors')
 
 var app = express()

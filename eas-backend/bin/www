@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+let env = require('dotenv').config()
 var app = require('../app');
 var debug = require('debug')('eas-backend:server');
 var http = require('http');
