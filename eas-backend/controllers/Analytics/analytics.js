@@ -5,7 +5,7 @@ let redshift = require('./../../db/redshiftCon')
 // let validator = require('./validator')
 
 const testQuery = `select place, id from eas_prod where time > 1523375443100`
-const baseQuery = `select place, id from eas_prod `
+const baseQuery = `select place, id from eas_prod where `
 
 router.get('/search-test', async (req, res, next) => {
 

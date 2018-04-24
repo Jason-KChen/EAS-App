@@ -49,30 +49,72 @@ class SearchView extends Component {
 
     const dateValue = this.analyticalStore.selectedDateOption === 'date_value' ? (
       <div className="row">
-        <div className="input-field col s6 offset-s3">
-          <input value={this.analyticalStore.dateOptionValue} onChange={(e) => this.analyticalStore.dateOptionValueChange(e)} id="date_value" type="text" className="datepicker"/>
+        <div className="col s6 offset-s3">
+          {/*<input value={this.analyticalStore.dateOptionValue} onChange={(e) => this.analyticalStore.dateOptionValueChange(e)} id="date_value" type="text" className="datepicker"/>*/}
+          <DatePicker selected={this.analyticalStore.dateOptionValue} onChange={(e) => this.analyticalStore.dateOptionValueChange(e)} id="date_value"/>
           <label className="active" htmlFor="date_value">Date</label>
         </div>
-        <DatePicker/>
 
       </div>
     ): null
 
     const dateRange = this.analyticalStore.selectedDateOption === 'date_range' ? (
       <div className="row">
-        <div className="input-field col s4 offset-s2">
-          <input value={this.analyticalStore.dateOptionRangeFrom} onChange={(e) => this.analyticalStore.dateOptionRangeFromChange(e)} id="date_range_1" type="text" className="datepicker"/>
+        <div className="col s4 offset-s2">
+          {/*<input value={this.analyticalStore.dateOptionRangeFrom} onChange={(e) => this.analyticalStore.dateOptionRangeFromChange(e)} id="date_range_1" type="text" className="datepicker"/>*/}
+          <DatePicker selected={this.analyticalStore.dateOptionRangeFrom} onChange={(e) => this.analyticalStore.dateOptionRangeFromChange(e)} id="date_range_1"/>
           <label className="active" htmlFor="date_range_1">From Date</label>
         </div>
-        <div className="input-field col s4 offset-s2">
-          <input value={this.analyticalStore.dateOptionRangeTo} onChange={(e) => this.analyticalStore.dateOptionRangeToChange(e)} id="date_range_2" type="text" className="datepicker"/>
+        <div className="col s4 offset-s2">
+          {/*<input value={this.analyticalStore.dateOptionRangeTo} onChange={(e) => this.analyticalStore.dateOptionRangeToChange(e)} id="date_range_2" type="text" className="datepicker"/>*/}
+          <DatePicker selected={this.analyticalStore.dateOptionRangeTo} onChange={(e) => this.analyticalStore.dateOptionRangeToChange(e)} id="date_range_2"/>
           <label className="active" htmlFor="date_range_2">To Date</label>
         </div>
       </div>
     ): null
 
+    // country
+    const countryValue = this.analyticalStore.selectedCountryOption === 'country_value' ? (
+      <div className="row">
+        <div className="input-field col s6 offset-s3">
+          <input value={this.analyticalStore.countryOptionValue} onChange={(e) => this.analyticalStore.countryOptionValueChange(e)} id="country_value" type="text"/>
+          <label className="active" htmlFor="country_value">Country ISO code</label>
+        </div>
+      </div>
+    ) : null
 
+    // id
+    const idValue = this.analyticalStore.selectedIdOption === 'id_value' ? (
+      <div className="row">
+        <div className="input-field col s6 offset-s3">
+          <input value={this.analyticalStore.idOptionValue} onChange={(e) => this.analyticalStore.idOptionValueChange(e)} id="id_value" type="text"/>
+          <label className="active" htmlFor="id_value">Earthquake ID</label>
+        </div>
+      </div>
+    ) : null
 
+    // depth
+    const depthValue = this.analyticalStore.selectedDepthOption === 'depth_value' ? (
+      <div className="row">
+        <div className="input-field col s6 offset-s3">
+          <input value={this.analyticalStore.depthOptionValue} onChange={(e) => this.analyticalStore.depthOptionValueChange(e)} id="depth_value" type="number"/>
+          <label className="active" htmlFor="depth_value">Depth whole number</label>
+        </div>
+      </div>
+    ): null
+
+    const depthRange = this.analyticalStore.selectedDepthOption === 'depth_range' ? (
+      <div className="row">
+        <div className="input-field col s4 offset-s2">
+          <input value={this.analyticalStore.depthOptionRangeFrom} onChange={(e) => this.analyticalStore.depthOptionRangeFromChange(e)} id="depth_range1" type="number"/>
+          <label className="active" htmlFor="depth_range1">From Depth</label>
+        </div>
+        <div className="input-field col s4 offset-s2">
+          <input value={this.analyticalStore.depthOptionRangeTo} onChange={(e) => this.analyticalStore.depthOptionRangeToChange(e)} id="depth_range2" type="number"/>
+          <label className="active" htmlFor="depth_range2">To Depth</label>
+        </div>
+      </div>
+    ): null
 
     return(
       <div className="container">
@@ -121,6 +163,39 @@ class SearchView extends Component {
             </div>
             {magnitudeValue}
             {magnitudeRange}
+          </form>
+          <form>
+            <div className="row">
+              <div className="col s3">
+                <p>Search by Depth</p>
+              </div>
+              <div className="col s3">
+                <p>
+                  <label>
+                    <input id="depth1" name="depth" value="depth_none" onChange={(e) => this.analyticalStore.depthOptionChange(e)} type="radio" checked={this.analyticalStore.selectedDepthOption === 'depth_none'}/>
+                    <span htmlFor="depth1">None</span>
+                  </label>
+                </p>
+              </div>
+              <div className="col s3">
+                <p>
+                  <label>
+                    <input id="depth2" name="depth" value="depth_value" onChange={(e) => this.analyticalStore.depthOptionChange(e)} type="radio" checked={this.analyticalStore.selectedDepthOption === 'depth_value'}/>
+                    <span htmlFor="depth2">Value</span>
+                  </label>
+                </p>
+              </div>
+              <div className="col s3">
+                <p>
+                  <label>
+                    <input id="depth3" name="depth" value="depth_range" onChange={(e) => this.analyticalStore.depthOptionChange(e)} type="radio" checked={this.analyticalStore.selectedDepthOption === 'depth_range'}/>
+                    <span htmlFor="depth3">Range</span>
+                  </label>
+                </p>
+              </div>
+            </div>
+            {depthValue}
+            {depthRange}
           </form>
           <form>
             <div className="row">
@@ -177,6 +252,7 @@ class SearchView extends Component {
                 </p>
               </div>
             </div>
+            {countryValue}
           </form>
           <form>
             <div className="row">
@@ -262,9 +338,22 @@ class SearchView extends Component {
                 </p>
               </div>
             </div>
+            {idValue}
           </form>
         </div>
+        <div className="row">
+          <div className="col s6">
+            <button onClick={() => this.analyticalStore.performSearch()} className="waves-effect waves-grey btn-flat green-text">Search</button>
+          </div>
+          <div className="col s6">
+            <button className="waves-effect waves-grey btn-flat green-text">Aggregate</button>
+          </div>
+        </div>
         <hr/>
+        <div className="row">
+          {this.analyticalStore.constructedQuery}
+
+        </div>
 
       </div>
     )
