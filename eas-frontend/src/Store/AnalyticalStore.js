@@ -1,8 +1,11 @@
 import { observable, action } from 'mobx'
+import moment from 'moment'
 
 
 class AnalyticalStore {
   @observable searchResults = []
+  @observable showFiltered = false
+  @observable showAnalytics = false
 
   // grouped
   // Mag
@@ -19,9 +22,9 @@ class AnalyticalStore {
 
   // Date
   @observable selectedDateOption = 'date_none'
-  @observable dateOptionValue = ''
-  @observable dateOptionRangeFrom = ''
-  @observable dateOptionRangeTo = ''
+  @observable dateOptionValue = null
+  @observable dateOptionRangeFrom = null
+  @observable dateOptionRangeTo = null
 
   // country
   @observable selectedCountryOption = 'country_none'
@@ -39,6 +42,10 @@ class AnalyticalStore {
 
   // query
   @observable constructedQuery = ''
+
+  // search
+  @observable filterKeyword = ''
+  @observable filteredSearchResults = []
 
   constructor (rootStore) {
     this.rootStore = rootStore
@@ -117,7 +124,13 @@ class AnalyticalStore {
     this.selectedIdOption = e.target.value
   }
 
-  @action performSearch () {
+  @action async performSearch () {
+    this.showAnalytics = false
+    this.showFiltered = false
+    this.filterKeyword = ''
+    this.searchResults.clear()
+    this.filteredSearchResults.clear()
+
     let status = this.constructQuery()
 
     if (!status) {
@@ -125,6 +138,49 @@ class AnalyticalStore {
       return
     }
 
+    let qStatus = await this.sendQuery()
+
+    if (!qStatus) {
+      window.toastr.warning('Failed to perform search')
+    } else {
+      this.showFiltered = true
+    }
+  }
+
+  @action async sendQuery () {
+    try {
+      let res = await fetch(this.BASE + '/api/analytics/search?condition=' + this.constructedQuery, {
+        Method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      let data = await res.json()
+
+      if (data.status) {
+        this.searchResults.clear()
+        this.filteredSearchResults.clear()
+
+        this.searchResults = data.data.map((obj) => {
+          let temp = {}
+          temp['place'] = obj.place
+          temp['id'] = obj.id
+
+          let timeStamp = new Date(parseInt(obj.time))
+          temp['time'] = (timeStamp.getMonth() + 1).toString() + '-' + timeStamp.getDate().toString() + '-' + timeStamp.getFullYear().toString()
+
+          return temp
+        })
+        this.filteredSearchResults = this.searchResults
+        return true
+
+      } else {
+        return false
+      }
+    } catch (err) {
+      console.log(err)
+      return false
+    }
   }
 
   @action constructQuery () {
@@ -145,6 +201,102 @@ class AnalyticalStore {
           buildingBlock.push('mag BETWEEN ' + this.magOptionRangeFrom.toString() + ' AND ' + this.magOptionRangeTo.toString())
           break
       }
+
+      switch (this.selectedDepthOption) {
+        case 'depth_none':
+          break
+        case 'depth_value':
+          if (isNaN(this.depthOptionValue)) {
+            return false
+          }
+
+
+          buildingBlock.push('(depth::integer)=' + parseInt(this.depthOptionValue.toString()))
+          break
+        case 'depth_range':
+          if (isNaN(this.depthOptionRangeFrom) || isNaN(this.depthOptionRangeTo)) {
+            return false
+          }
+
+          if (this.depthOptionRangeFrom > this.depthOptionRangeTo) {
+            return false
+          }
+
+          buildingBlock.push('depth BETWEEN ' + this.depthOptionRangeFrom.toString() + ' AND ' + this.depthOptionRangeTo.toString())
+          break
+      }
+
+      switch (this.selectedDateOption) {
+        // need to do more validation here
+        case 'date_none':
+          break
+        case 'date_value':
+
+          let dayAfter = moment(this.dateOptionValue).add(1, 'days')
+
+          buildingBlock.push('time BETWEEN ' + (new Date(this.dateOptionValue)).getTime() + ' AND ' + dayAfter.valueOf())
+          break
+        case 'date_range':
+          if (this.dateOptionRangeFrom > this.dateOptionRangeTo) {
+            return false
+          }
+
+          buildingBlock.push('time BETWEEN ' + (new Date(this.dateOptionRangeFrom)).getTime() + ' AND ' + (new Date(this.dateOptionRangeTo)).getTime())
+          break
+      }
+
+      switch (this.selectedCountryOption) {
+        case 'country_none':
+          break
+        case 'country_value':
+          if (this.countryOptionValue.length < 2) {
+            return false
+          }
+
+          buildingBlock.push("country='" + this.countryOptionValue.toUpperCase() + "'")
+
+          break
+      }
+
+      switch (this.selectedTsunamiOption) {
+        case 'tsunami_either':
+          break
+        case 'tsunami_yes':
+          buildingBlock.push('tsunami=1')
+
+          break
+        case 'tsunami_no':
+          buildingBlock.push('tsunami=0')
+
+          break
+      }
+
+      switch (this.selectedStatusOption) {
+        case 'status_either':
+          break
+        case 'status_automatic':
+          buildingBlock.push("status='automatic'")
+
+          break
+        case 'status_reviewed':
+          buildingBlock.push("status='reviewed'")
+
+          break
+      }
+
+      switch (this.selectedIdOption) {
+        case 'id_none':
+          break
+        case 'id_value':
+          if (this.idOptionValue.length < 5) {
+            return false
+          }
+
+          buildingBlock.push("id='" + this.idOptionValue + "'")
+
+          break
+      }
+
       this.constructedQuery = buildingBlock.join(' and ')
       return true
 
@@ -152,6 +304,27 @@ class AnalyticalStore {
       console.log(err)
       return false
     }
+  }
+
+  @action filterKeywordChange (e) {
+    if (e.target.value !== null) {
+      this.filterKeyword = e.target.value
+    } else {
+      this.filterKeyword = ''
+    }
+
+    this.performFilter()
+  }
+
+  @action performFilter () {
+    if (this.filterKeyword.length === 0 || this.filterKeyword === null) {
+      return
+    }
+
+    let lowerCaseKeyword = this.filterKeyword.toLowerCase()
+    this.filteredSearchResults = this.searchResults.filter((obj, index) => {
+      return (obj.place.toLowerCase() + ' | ' + obj.time.toLowerCase()).includes(lowerCaseKeyword)
+    })
   }
 
 

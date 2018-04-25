@@ -21,6 +21,56 @@ class SearchView extends Component {
 
   render () {
 
+    const showConstructedQuery = this.analyticalStore.rootStore.uiStore.isAdmin ? (
+      <div className="row">
+        ADMIN GOD MODE: {this.analyticalStore.constructedQuery}
+      </div>
+    ) : null
+
+    // const filterResultSearchBar = ()
+
+    const filteringEntryView = this.analyticalStore.filteredSearchResults.map((obj, index) => {
+      return (
+        <li key={index} className="collection-item">
+          <div className="row" style={{marginBottom: '0px'}}>
+            <div style={{fontSize: 'x-large', paddingTop: '7px'}} className="col s10">
+              {obj.place} | {obj.time}
+            </div>
+            <div className="col s2">
+              <button onClick={() => {
+                this.analyticalStore.rootStore.detailedInfoStore.selectedEarthquakeId = obj.id
+                this.props.history.push('/detailed-info')
+              }} className="btn"> View Details
+              </button>
+
+            </div>
+          </div>
+        </li>
+      )
+    })
+
+    const filteringResultsView = this.analyticalStore.showFiltered ? (
+      <div>
+        <div>
+          <nav>
+            <div className="nav-wrapper">
+              <form>
+                <div className="input-field">
+                  <input value={this.analyticalStore.filterKeyword} onChange={(e) => this.analyticalStore.filterKeywordChange(e)} placeholder="Search by Location(City), Country(State) or MM-DD-YYYY" className="white-text" id="search" type="search" style={{backgroundColor: 'teal'}}/>
+                  <label className="label-icon" htmlFor="search"><i className="material-icons">search</i></label>
+                  {/*<i className="material-icons">close</i>*/}
+                </div>
+              </form>
+            </div>
+          </nav>
+        </div>
+
+        <ul className="collection">
+          {this.analyticalStore.searchResults.length === 0 ? <li className="collection-item" style={{fontSize: 'x-large'}}>Found 0 records</li> : filteringEntryView}
+        </ul>
+      </div>
+    ) : null
+
     //mags
 
     const magnitudeValue = this.analyticalStore.selectedMagOption === 'magnitude_value' ? (
@@ -350,10 +400,8 @@ class SearchView extends Component {
           </div>
         </div>
         <hr/>
-        <div className="row">
-          {this.analyticalStore.constructedQuery}
-
-        </div>
+        {showConstructedQuery}
+        {filteringResultsView}
 
       </div>
     )

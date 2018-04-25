@@ -160,7 +160,7 @@ class DetailedView extends Component {
         </div>
         <div className="row" style={{marginBottom: '0px'}}>
           <div className="input-field col s3">
-            <button onClick={() => this.props.history.push('/map')} className="waves-effect waves-grey btn-flat black-text">Back to Dashboard</button>
+            <button onClick={() => this.props.history.goBack()} className="waves-effect waves-grey btn-flat black-text">Back to Dashboard</button>
           </div>
         </div>
         <hr/>
