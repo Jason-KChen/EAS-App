@@ -5,7 +5,7 @@ import moment from 'moment'
 class AnalyticalStore {
   @observable searchResults = []
   @observable showFiltered = false
-  @observable showAnalytics = false
+  // @observable showAnalytics = false
 
   // grouped
   // Mag
@@ -46,6 +46,20 @@ class AnalyticalStore {
   // search
   @observable filterKeyword = ''
   @observable filteredSearchResults = []
+
+  // aggregation
+  @observable showAggregation = false
+  @observable aggregationMode = false
+  @observable selectedGroupByOption = 'country'
+  @observable selectedAggregationOption = 'count'
+  @observable selectedDistinctOption = 'no'
+  @observable selectedAggregationCountColumnOption = 'country'
+  @observable selectedAggregationValueColumnOption = 'depth'
+  @observable constructedAggregation = []
+  @observable aggregationResult = []
+  @observable key = ''
+  @observable value = ''
+
 
   constructor (rootStore) {
     this.rootStore = rootStore
@@ -125,11 +139,15 @@ class AnalyticalStore {
   }
 
   @action async performSearch () {
-    this.showAnalytics = false
+    // this.showAnalytics = false
+    this.showAggregation = false
     this.showFiltered = false
     this.filterKeyword = ''
     this.searchResults.clear()
     this.filteredSearchResults.clear()
+    this.constructedQuery = ''
+    this.constructedAggregation = []
+    this.aggregationResult.clear()
 
     let status = this.constructQuery()
 
@@ -146,6 +164,48 @@ class AnalyticalStore {
       this.showFiltered = true
     }
   }
+
+  @action async performAggregation () {
+    console.log('asdasd')
+    this.showAggregation = false
+    this.showFiltered = false
+    this.filterKeyword = ''
+    this.searchResults.clear()
+    this.filteredSearchResults.clear()
+    this.constructedQuery = ''
+    this.constructedAggregation = []
+    this.aggregationResult.clear()
+
+    let status = this.constructQuery()
+
+    if (!status) {
+      window.toastr.warning('Invalid Filtering Parameter')
+      return
+    }
+
+    try {
+      let res = await fetch(this.BASE + '/api/analytics/aggregate?condition=' + this.constructedQuery + '&groupByOption=' + this.selectedGroupByOption + '&aggregationOption=' + this.selectedAggregationOption + '&distinct=' + this.selectedDistinctOption + '&countColumn=' + this.selectedAggregationCountColumnOption + '&valueColumn=' + this.selectedAggregationValueColumnOption, {
+        Method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      let data = await res.json()
+
+      if (data.status) {
+        this.aggregationResult = data.data
+        this.key = this.selectedGroupByOption
+        this.value = this.selectedAggregationOption
+        this.showAggregation = true
+      } else {
+        window.toastr.warning('Can\'t perform aggregation')
+      }
+    } catch (err) {
+      console.log(err)
+      window.toastr.warning('Can\'t perform aggregation')
+    }
+  }
+
 
   @action async sendQuery () {
     try {
@@ -327,6 +387,25 @@ class AnalyticalStore {
     })
   }
 
+  @action groupByOptionChange (e) {
+    this.selectedGroupByOption = e.target.value
+  }
+
+  @action aggregationOptionChange (e) {
+    this.selectedAggregationOption = e.target.value
+  }
+
+  @action distinctOptionChange (e) {
+    this.selectedDistinctOption = e.target.value
+  }
+
+  @action aggregationCountColumnOptionChange (e) {
+    this.selectedAggregationCountColumnOption = e.target.value
+  }
+
+  @action aggregationValueColumnOptionChange (e) {
+    this.selectedAggregationValueColumnOption = e.target.value
+  }
 
 }
 

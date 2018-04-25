@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import { Redirect } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
+// import $ from ''
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -17,13 +18,93 @@ class SearchView extends Component {
 
   async componentDidMount () {
     // window.M.updateTextFields()
+    window.$('select').formSelect()
+  }
+
+  componentDidUpdate () {
+    window.$('select').formSelect()
   }
 
   render () {
 
+
+    const aggCountOptions = this.analyticalStore.selectedAggregationOption === 'count' ? (
+      <div className="input-field col s3 offset-s1">
+        <select value={this.analyticalStore.selectedAggregationCountColumnOption} onChange={(e) => this.analyticalStore.aggregationCountColumnOptionChange(e)}>
+          <option value="country">Country</option>
+          <option value="magnitude_type">Magnitude Type</option>
+          <option value="status">Status</option>
+          <option value="*">All</option>
+        </select>
+        <label>Choose Column</label>
+      </div>
+    ) : null
+    const aggNonCountOptions = this.analyticalStore.selectedAggregationOption !== 'count' ? (
+      <div className="input-field col s3 offset-s1">
+        <select value={this.analyticalStore.selectedAggregationValueColumnOption} onChange={(e) => this.analyticalStore.aggregationValueColumnOptionChange(e)}>
+          <option value="depth">Depth</option>
+          <option value="mag">Magnitude</option>
+          <option value="nst">Nst</option>
+        </select>
+        <label>Choose Column</label>
+      </div>
+    ) : null
+
+    const distinctOption = this.analyticalStore.selectedAggregationOption === 'count' ? (
+      <div className="input-field col s3 offset-s1">
+        <select value={this.analyticalStore.selectedDistinctOption} onChange={(e) => this.analyticalStore.distinctOptionChange(e)}>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <label>Distinct Values</label>
+      </div>
+    ) : null
+
+
+    const aggregationSelects = this.analyticalStore.aggregationMode ? (
+      <div>
+        <form>
+          <div className="row">
+            <div className="input-field col s3 offset-s1">
+              <select value={this.analyticalStore.selectedAggregationOption} onChange={(e) => this.analyticalStore.aggregationOptionChange(e)}>
+                <option value="count">Count</option>
+                <option value="max">Max</option>
+                <option value="min">Min</option>
+                <option value="average">Average</option>
+              </select>
+              <label>Choose Aggregation Function</label>
+            </div>
+            {aggNonCountOptions}
+            {aggCountOptions}
+            {distinctOption}
+          </div>
+        </form>
+        <form>
+          <div className="row">
+            <div className="input-field col s3 offset-s1">
+              <select value={this.analyticalStore.selectedGroupByOption} onChange={(e) => this.analyticalStore.groupByOptionChange(e)}>
+                <option value="country">Country</option>
+                <option value="depth::int">Depth (whole number)</option>
+                <option value="mag::int">Magnitude (whole number)</option>
+                <option value="magnitude_type">Magnitude Type</option>
+                <option value="status">Status</option>
+                <option value="day">Day</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+                <option value="tsunami">Tsunami</option>
+              </select>
+              <label>Choose group by option</label>
+            </div>
+          </div>
+        </form>
+      </div>
+    ) : null
+
     const showConstructedQuery = this.analyticalStore.rootStore.uiStore.isAdmin ? (
       <div className="row">
-        ADMIN GOD MODE: {this.analyticalStore.constructedQuery}
+        ADMIN GOD MODE<br/>
+        Filtering Query: {this.analyticalStore.constructedQuery} <br/>
+        Aggregation Query: {this.analyticalStore.constructedAggregation[0]} {this.analyticalStore.constructedAggregation[1]}
       </div>
     ) : null
 
@@ -70,6 +151,47 @@ class SearchView extends Component {
         </ul>
       </div>
     ) : null
+
+    const aggregationEntryView = this.analyticalStore.aggregationResult.map((obj, index) => {
+      return (
+        <tr key={index}>
+          <td>
+            {obj[this.analyticalStore.key]}
+          </td>
+          <td>
+            {obj[this.analyticalStore.value]}
+          </td>
+          {/*<div className="row" style={{marginBottom: '0px'}}>*/}
+            {/*<div style={{fontSize: 'x-large', paddingTop: '7px'}} className="col s12">*/}
+              {/*: */}
+            {/*</div>*/}
+          {/*</div>*/}
+        </tr>
+      )
+    })
+
+    const aggregationResultsView = this.analyticalStore.showAggregation ? (
+      <div style={{marginTop: '5px', display: 'block', height: '700px', overflow: 'auto'}}>
+        <table className="striped centered" style={{fontSize: 'large'}}>
+          <thead>
+            <tr>
+              <th>{this.analyticalStore.key}</th>
+              <th>{this.analyticalStore.value}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {aggregationEntryView}
+          </tbody>
+        </table>
+        {/*<ul className="collection">*/}
+          {/*<li className="collection-item" style={{fontSize: 'x-large'}}>*/}
+            {/*{this.analyticalStore.selectedGroupByOption} : {this.analyticalStore.selectedAggregationOption}*/}
+          {/*</li>*/}
+          {/*{this.analyticalStore.aggregationResult.length === 0 ? <li className="collection-item" style={{fontSize: 'x-large'}}>Found 0 Aggregation</li> : aggregationEntryView}*/}
+        {/*</ul>*/}
+      </div>
+    ) : null
+
 
     //mags
 
@@ -391,18 +513,34 @@ class SearchView extends Component {
             {idValue}
           </form>
         </div>
+        <div id="aggregationControl">
+          <form>
+            <div className="row">
+              <div className="col s4">
+                <p>
+                  <label>
+                    <input type="checkbox" checked={this.analyticalStore.aggregationMode} onClick={() => this.analyticalStore.aggregationMode = !this.analyticalStore.aggregationMode}/>
+                    <span>Show Aggregation Option</span>
+                  </label>
+                </p>
+              </div>
+            </div>
+          </form>
+          {aggregationSelects}
+
+        </div>
         <div className="row">
           <div className="col s6">
-            <button onClick={() => this.analyticalStore.performSearch()} className="waves-effect waves-grey btn-flat green-text">Search</button>
+            <button onClick={() => this.analyticalStore.performSearch()} className="waves-effect waves-grey btn-flat green-text" disabled={this.analyticalStore.aggregationMode}>Search</button>
           </div>
           <div className="col s6">
-            <button className="waves-effect waves-grey btn-flat green-text">Aggregate</button>
+            <button onClick={() => this.analyticalStore.performAggregation()} className="waves-effect waves-grey btn-flat green-text" disabled={!this.analyticalStore.aggregationMode}>Aggregate</button>
           </div>
         </div>
         <hr/>
-        {showConstructedQuery}
+        {/*{showConstructedQuery}*/}
         {filteringResultsView}
-
+        {aggregationResultsView}
       </div>
     )
   }
