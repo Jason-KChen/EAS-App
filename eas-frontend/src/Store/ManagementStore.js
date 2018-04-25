@@ -116,12 +116,13 @@ class ManagementStore {
       if (d.status) {
         await this.fetchFlaggedComments()
       } else {
-        window.toastr.warning('Failed to unflag comment')
+        console.log(d)
+        window.toastr.warning('Failed to delete comment')
       }
 
     } catch (err) {
       console.log(err)
-      window.toastr.warning('Failed to unflag comment')
+      window.toastr.warning('Failed to delete comment')
     }
   }
 
@@ -154,9 +155,6 @@ class ManagementStore {
       window.toastr.warning('Failed to unflag comment')
     }
   }
-
-
-
 }
 
 export default ManagementStore

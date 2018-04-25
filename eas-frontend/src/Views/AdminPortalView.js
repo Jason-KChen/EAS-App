@@ -21,7 +21,7 @@ class AdminDashboard extends Component {
 
     const flaggedItems = this.managementStore.flaggedComments.map((obj, index) => {
       return (
-        <li className="collection-item avatar">
+        <li key={index} className="collection-item avatar">
           <div className="row" style={{marginBottom: '0px'}}>
             <div className="col s2">
               <i className="material-icons circle">folder</i>

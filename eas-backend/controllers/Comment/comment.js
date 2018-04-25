@@ -76,7 +76,7 @@ router.post('/unflag-comment', async (req, res, next) => {
 })
 
 router.post('/delete-comment', async (req, res, next) => {
-  if (!req.hasOwnProperty('username') || !req.body['time']) {
+  if (!req.body.hasOwnProperty('username') || !req.body['time']) {
     return res.send({
       data: 'Missing comment id',
       status: false

@@ -79,12 +79,12 @@ router.get('/aggregate', async (req, res, next) => {
         finalColumnName = `select country, `
         groupByPhrase = `group by country order by country;`
         break
-      case 'depth::int':
-        finalColumnName = `select depth::int, `
+      case 'depth':
+        finalColumnName = `select depth::int as depth, `
         groupByPhrase = `group by depth::int order by depth::int;`
         break
-      case 'mag::int':
-        finalColumnName = `select mag::int, `
+      case 'magnitude':
+        finalColumnName = `select mag::int as magnitude, `
         groupByPhrase = `group by mag::int order by mag::int;`
         break
       case 'magnitude_type':
@@ -118,7 +118,7 @@ router.get('/aggregate', async (req, res, next) => {
         aggregateValuePhrase = 'max(' + valueColumn + ') from eas_prod'
         break
       case 'average':
-        aggregateValuePhrase = 'average(' + valueColumn + ') from eas_prod'
+        aggregateValuePhrase = 'avg(' + valueColumn + ') as average from eas_prod'
         break
     }
 

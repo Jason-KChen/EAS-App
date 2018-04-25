@@ -84,8 +84,8 @@ class SearchView extends Component {
             <div className="input-field col s3 offset-s1">
               <select value={this.analyticalStore.selectedGroupByOption} onChange={(e) => this.analyticalStore.groupByOptionChange(e)}>
                 <option value="country">Country</option>
-                <option value="depth::int">Depth (whole number)</option>
-                <option value="mag::int">Magnitude (whole number)</option>
+                <option value="depth">Depth (whole number)</option>
+                <option value="magnitude">Magnitude (whole number)</option>
                 <option value="magnitude_type">Magnitude Type</option>
                 <option value="status">Status</option>
                 <option value="day">Day</option>
