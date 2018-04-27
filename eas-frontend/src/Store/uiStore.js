@@ -1,6 +1,7 @@
 import { observable, action } from 'mobx'
 
 export class UIStore {
+  @observable userData = new Map()
   @observable username = 'dev'
 
   constructor (rootStore) {

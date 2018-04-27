@@ -44,7 +44,7 @@ class ManagementStore {
 
   @action async fetchNonAdminUsers () {
     try {
-      let res = await fetch(this.BASE + '/api/auth/get-all-users', {
+      let res = await fetch(this.BASE + '/api/user/get-all-users', {
         method: 'GET',
         headers: {
           'Accept': 'application/json'
@@ -70,7 +70,7 @@ class ManagementStore {
     window.toastr.info('Processing')
 
     try {
-      let res = await fetch(this.BASE + '/api/auth/delete-user', {
+      let res = await fetch(this.BASE + '/api/user/delete-user', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

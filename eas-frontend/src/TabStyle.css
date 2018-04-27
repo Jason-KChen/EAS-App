@@ -1,0 +1,18 @@
+/*source https://github.com/Dogfalo/materialize/issues/485*/
+
+.tabs .tab a{
+    color:#000 !important;
+} /*Black color to the text*/
+
+.tabs .tab a:hover {
+    background-color: #87c7ff !important;
+} /*background color color on hover*/
+
+.tabs .tab a.active {
+    background-color: #87c7ff !important;
+    color: #000000 !important;
+} /*Background and text color when a tab is active*/
+
+.tabs .indicator {
+    background-color: #2f95ff !important;
+} /*Color of underline*/

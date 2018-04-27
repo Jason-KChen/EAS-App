@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import logo from './logo.svg'
 import './App.css'
+import './TabStyle.css'
 import MainRouter from "./MainRouter"
 
 class App extends Component {

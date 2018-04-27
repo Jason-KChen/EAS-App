@@ -5,6 +5,7 @@ import MainDashboard from "./Views/MainDashboard"
 import AdminDashboard from "./Views/AdminPortalView"
 import DetailedView from "./Views/DetailedView"
 import SearchView from "./Views/SearchView"
+import LoginView from "./Views/LoginView"
 
 @inject('rootStore')
 @observer
@@ -21,6 +22,7 @@ class MainRouter extends Component {
           <Route exact path="/admin" component={AdminDashboard}/>
           <Route exact path="/detailed-info" component={DetailedView}/>
           <Route exact path="/search" component={SearchView}/>
+          <Route exact path="/" component={LoginView}/>
         </div>
       </Router>
     )

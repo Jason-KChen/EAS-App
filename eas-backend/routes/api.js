@@ -10,7 +10,7 @@ let analytics = require('../controllers/Analytics/analytics')
 router.use('/earthquake', earthquake)
 router.use('/comment', comment)
 router.use('/news', news)
-router.use('/auth', user)
+router.use('/user', user)
 router.use('/analytics', analytics)
 
 module.exports = router
