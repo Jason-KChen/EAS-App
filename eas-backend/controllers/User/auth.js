@@ -87,14 +87,33 @@ router.post('/login', async (req, res, next) => {
       })
     }
 
-    return res.send({
-      data: '',
-      status: v.Item.password === hashedPassword,
-    })
+    if (v.Item.password === hashedPassword) {
+
+      let isAdmin = v.Item.isAdmin
+      let username = v.Item.username
+
+      return res.send({
+        data: {
+          username: username,
+          isAdmin: isAdmin,
+          token: jwt.sign({
+            username: username,
+            isAdmin: isAdmin,
+          }, process.env.JSON_SECRET)
+        },
+        status: true
+      })
+    } else {
+      return res.send({
+        data: '',
+        status: false
+      })
+    }
+
   } catch (err) {
     console.log(err)
     return res.send({
-      data: [err],
+      data: err,
       status: false
     })
   }

@@ -10,6 +10,7 @@ class AuthenticationStore {
   @observable desiredUsername = ''
   @observable desiredPassword = ''
   @observable desiredPasswordRepeat = ''
+  @observable goodToGo = false
 
   constructor (rootStore) {
     this.rootStore = rootStore
@@ -48,7 +49,8 @@ class AuthenticationStore {
       let d = await res.json()
 
       if (d.status) {
-        console.log(d)
+        this.rootStore.uiStore.saveUserData(d.data.username, d.data.isAdmin, d.data.token)
+        this.goodToGo = true
         window.toastr.success('You are all set')
       } else {
         window.toastr.warning('Failed to register')
@@ -80,6 +82,9 @@ class AuthenticationStore {
       let d = await res.json()
 
       if (d.status) {
+        this.rootStore.uiStore.saveUserData(d.data.username, d.data.isAdmin, d.data.token)
+        this.goodToGo = true
+
         window.toastr.success('You are good!')
       } else {
         window.toastr.warning('Failed to authenticate')
@@ -88,6 +93,15 @@ class AuthenticationStore {
       console.log(err)
       window.toastr.warning('Failed to contact the server')
     }
+  }
+
+  @action resetInfo () {
+    this.username = ''
+    this.password = ''
+    this.desiredUsername = ''
+    this.desiredPassword = ''
+    this.desiredPasswordRepeat = ''
+    this.goodToGo = false
   }
 }
 

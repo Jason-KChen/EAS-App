@@ -19,6 +19,11 @@ class AdminDashboard extends Component {
 
   render () {
 
+    if (this.managementStore.rootStore.uiStore.isAdmin === 'false') {
+      window.toastr.warning('You are not authorized')
+      return <Redirect to="/map"/>
+    }
+
     const flaggedItems = this.managementStore.flaggedComments.map((obj, index) => {
       return (
         <li key={index} className="collection-item avatar">

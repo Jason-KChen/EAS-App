@@ -12,10 +12,18 @@ class LoginView extends Component {
   }
 
   async componentDidMount () {
+    this.authenticationStore.resetInfo()
     this.sidePanel = window.M.Tabs.init(window.$('#authenticationTabs'));
   }
 
   render () {
+    if (this.authenticationStore.rootStore.uiStore.token !== null && this.authenticationStore.rootStore.uiStore.token !== '') {
+      return <Redirect to='/map' />
+    }
+
+    if (this.authenticationStore.goodToGo) {
+      return <Redirect to='/map' />
+    }
 
     const LoginPanel = (
       <div style={{font: '1.5em', marginLeft: '5%', marginRight: '5%'}}>
